@@ -1,0 +1,40 @@
+{
+  "name": "qna-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "start": "nodemon server/app.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashtsai14/qna-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashtsai14/qna-api/issues"
+  },
+  "homepage": "https://github.com/ashtsai14/qna-api#readme",
+  "dependencies": {
+    "csv-parse": "^5.0.4",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "fast-csv": "^4.3.6",
+    "fs": "0.0.1-security",
+    "node-postgres": "^0.6.2",
+    "nodemon": "^2.0.15",
+    "pg": "^8.7.1",
+    "postgres-migrations": "^5.3.0",
+    "supertest": "^6.2.2"
+  },
+  "devDependencies": {
+    "jest": "^27.5.0"
+  }
+}

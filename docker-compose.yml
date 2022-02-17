@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  server:
+    container_name: server
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app:ro
+      - /app/node_modules
+    env_file:
+      - ./.env
+  db:
+    image: postgres:10.16
+    container_name: postgresdb
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./.env
+    volumes:
+      # - ./pgdata:/var/lib/postgresql/data
+      - ./data/answers.csv:/var/lib/postgresql/csvData/answers.csv
+      - ./data/questions.csv:/var/lib/postgresql/csvData/questions.csv
+      - ./data/photos.csv:/var/lib/postgresql/csvData/photos.csv
+      - ./database/migrations/sql/dockerSchema.sql:/docker-entrypoint-initdb.d/dockerSchema.sql
+

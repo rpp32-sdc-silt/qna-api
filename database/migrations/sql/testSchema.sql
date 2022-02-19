@@ -10,21 +10,22 @@ CREATE TABLE products(
 );
 
 CREATE TABLE questions(
-  id serial primary key,
+  question_id serial primary key,
   product_id integer NOT NULL,
-  body VARCHAR(255) NOT NULL,
+  question_body VARCHAR(255) NOT NULL,
   epoch BIGINT NOT NULL,
   asker_name VARCHAR(255) NOT NULL,
   asker_email VARCHAR(255) NOT NULL,
   reported BOOLEAN,
-  helpful VARCHAR(255),
-  date_written TIMESTAMP NULL DEFAULT NULL
+  question_helpfulness integer NOT NULL,
+  question_date TIMESTAMP NULL DEFAULT NULL
 );
 
 
-COPY questions (id, product_id, body, epoch, asker_name, asker_email, reported, helpful) FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testQuestions.csv' Delimiter ',' csv header;
-UPDATE questions SET date_written = to_timestamp(floor(epoch/1000));
+COPY questions (question_id, product_id, question_body, epoch, asker_name, asker_email, reported, question_helpfulness) FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testQuestions.csv' Delimiter ',' csv header;
+UPDATE questions SET question_date = to_timestamp(floor(epoch/1000));
 ALTER TABLE questions DROP COLUMN epoch;
+SELECT setval(pg_get_serial_sequence('questions', 'question_id'), coalesce(max(question_id)+1, 1), false) FROM questions;
 
 CREATE TABLE answers(
   id integer primary key,
@@ -34,17 +35,18 @@ CREATE TABLE answers(
   answerer_name VARCHAR(255) NOT NULL,
   answerer_email VARCHAR(255) NOT NULL,
   reported BOOLEAN,
-  helpful VARCHAR(255),
-  date_written TIMESTAMP NULL DEFAULT NULL,
+  helpfulness VARCHAR(255),
+  date TIMESTAMP NULL DEFAULT NULL,
   CONSTRAINT fk_question
-    FOREIGN KEY (question_id) references questions(id)
+    FOREIGN KEY (question_id) references questions(question_id)
     ON UPDATE CASCADE
     ON DELETE RESTRICT
 );
 
-COPY answers (id, question_id, body, epoch, answerer_name, answerer_email, reported, helpful) FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testAnswers.csv' Delimiter ',' csv header;
-UPDATE answers SET date_written = to_timestamp(floor(epoch/1000));
+COPY answers (id, question_id, body, epoch, answerer_name, answerer_email, reported, helpfulness) FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testAnswers.csv' Delimiter ',' csv header;
+UPDATE answers SET date = to_timestamp(floor(epoch/1000));
 ALTER TABLE answers DROP COLUMN epoch;
+SELECT setval(pg_get_serial_sequence('answers', 'id'), coalesce(max(id)+1, 1), false) FROM answers;
 
 CREATE TABLE photos (
   id integer primary key,
@@ -57,3 +59,4 @@ CREATE TABLE photos (
 );
 
 COPY photos FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testPhotos.csv' Delimiter ',' csv header;
+SELECT setval(pg_get_serial_sequence('photos', 'id'), coalesce(max(id)+1, 1), false) FROM photos;

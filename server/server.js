@@ -1,5 +1,4 @@
 const express = require('express');
-const { connection } = require('../database/index.js');
 const bodyParser = require('body-parser')
 
 
@@ -7,29 +6,20 @@ module.exports = function (db) {
   const app = express();
 
   app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json())
 
   app.listen(3000, () => {
     console.log('Listening on Port 3000');
   });
 
   app.get('/', (req, res) => {
-    // res.send(req.query.productId);
-    // let query = 'Select * from questions limit 3'
-    // db.connection.query(query, (err, res) => {
-    //   if(!err) {
-    //     console.log(res.rows);
-    //   } else {
-    //     console.log(err.message);
-    //   }
-    //   db.connection.end
-    // })
-    res.send('hello world!!')
+    res.status(200).send('Welcome!');
   });
 
   app.get('/qa/questions', async (req, res) => {
     try {
       const questions = await db.getQuestions(req.body.productId, (req.body.page || 1), (req.body.count || 5));
-      res.send(questions);
+      res.status(200).send(questions);
     } catch (err) {
       res.status(404).send(err.message);
     }
@@ -65,7 +55,7 @@ module.exports = function (db) {
   app.get('/qa/questions/:question_id/answers', async (req, res) => {
     try {
       const answers = await db.getAnswers(req.params.question_id, (req.body.page || 1), (req.body.count || 5));
-      res.send(answers);
+      res.status(200).send(answers);
     } catch (err) {
       res.status(404).send(err.message);
     }
@@ -73,9 +63,15 @@ module.exports = function (db) {
 
   app.post('/qa/questions/:question_id/answers', async (req, res) => {
     try{
-      await db.addAnswer(req.params.question_id, req.body);
-      await db.addPhoto(req.body);
-      res.status(201).send('CREATED');
+      if (req.body.body && req.body.name && req.body.email) {
+        await db.addAnswer(req.params.question_id, req.body);
+        if(req.body.photos) {
+          await db.addPhoto(req.body);
+        }
+        res.status(201).send('CREATED');
+      } else {
+        res.status(404).send('Request body missing paramenter(s)')
+      }
     } catch (err) {
       res.status(404).send(err.message);
     }
@@ -98,15 +94,6 @@ module.exports = function (db) {
       res.status(404).send(err.message);
     }
   })
-
-  app.get('/allQuestions/:param1', async (req, res) => {
-    try {
-      const allQuestions = await db.getAllQuestions(req.query.productId);
-      res.send(allQuestions);
-    } catch (err) {
-      res.status(404).send(err.message);
-    }
-  });
 
   return app;
 }

@@ -91,12 +91,6 @@ db.getAnswers = async function (questionId, page, count) {
   return answers
 };
 
-db.getAllQuestions = async function (productId) {
-  const query = `Select * FROM questions WHERE product_id = ${productId}`;
-  const photos = await db.query(query);
-  return photos.rows;
-};
-
 db.addQuestion = async function (requestBody) {
   const query = `
     INSERT INTO questions (product_id, question_body, asker_name, asker_email, reported, question_date, question_helpfulness)
@@ -122,14 +116,23 @@ db.addPhoto = async function (requestBody) {
   //     (SELECT MAX(id) FROM answers), %L
   //   )
   // `, requestBody.photos);
-  for (const url of photos) {
-    const query = `
+  if (Array.isArray(photos)) {
+    for (const url of photos) {
+      const query = `
+        INSERT INTO photos (answer_id, url)
+        VALUES (
+          (SELECT MAX(id) FROM answers), '${url}')
+          `;
+        await db.query(query);
+      };
+    } else {
+      const query = `
       INSERT INTO photos (answer_id, url)
-      VALUES (
-        (SELECT MAX(id) FROM answers), '${url}')
+      VAlUES (
+        (SELECT MAX(id) FROM answers), '${photos}')
         `;
       await db.query(query);
-  };
+  }
 };
 
 db.updateQuestionHelpfulness = async function (questionId) {

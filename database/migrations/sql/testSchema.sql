@@ -28,14 +28,14 @@ ALTER TABLE questions DROP COLUMN epoch;
 SELECT setval(pg_get_serial_sequence('questions', 'question_id'), coalesce(max(question_id)+1, 1), false) FROM questions;
 
 CREATE TABLE answers(
-  id integer primary key,
+  id serial primary key,
   question_id serial NOT NULL,
   body VARCHAR(255) NOT NULL,
   epoch BIGINT NOT NULL,
   answerer_name VARCHAR(255) NOT NULL,
   answerer_email VARCHAR(255) NOT NULL,
   reported BOOLEAN,
-  helpfulness VARCHAR(255),
+  helpfulness integer NOT NULL,
   date TIMESTAMP NULL DEFAULT NULL,
   CONSTRAINT fk_question
     FOREIGN KEY (question_id) references questions(question_id)
@@ -49,7 +49,7 @@ ALTER TABLE answers DROP COLUMN epoch;
 SELECT setval(pg_get_serial_sequence('answers', 'id'), coalesce(max(id)+1, 1), false) FROM answers;
 
 CREATE TABLE photos (
-  id integer primary key,
+  id serial primary key,
   answer_id integer NOT NULL,
   url VARCHAR(2083) NOT NULL,
   CONSTRAINT fk_answer

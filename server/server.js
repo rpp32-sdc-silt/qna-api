@@ -1,24 +1,35 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 
 module.exports = function (db) {
   const app = express();
 
-  app.use(bodyParser.urlencoded({ extended: false }))
-  app.use(bodyParser.json())
+  app.use(cors());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
 
-  app.listen(3000, () => {
-    console.log('Listening on Port 3000');
+  app.listen(3050, () => {
+    console.log('Listening on Port 3050');
   });
 
   app.get('/', (req, res) => {
     res.status(200).send('Welcome!');
   });
 
+  // app.get('/qa/questions', async (req, res) => {
+  //   console.log('req params', req.query)
+  //   try {
+  //     res.send('test')
+  //   } catch (err) {
+  //     res.status(404).send(err.message);
+  //   }
+  // });
+
   app.get('/qa/questions', async (req, res) => {
     try {
-      const questions = await db.getQuestions(req.body.productId, (req.body.page || 1), (req.body.count || 5));
+      const questions = await db.getQuestions(req.query.product_id, (req.body.page || 1), (req.body.count || 5));
       res.status(200).send(questions);
     } catch (err) {
       res.status(404).send(err.message);

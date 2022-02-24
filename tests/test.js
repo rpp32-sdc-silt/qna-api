@@ -23,9 +23,8 @@ describe('GET /qa/questions', () => {
   describe('Given product ID', () => {
     test('Should respond with a 200 status code', async () => {
       const response = await request(mockServer)
-      .get('/qa/questions')
+      .get('/qa/questions?product_id=1')
       .send({
-        productId: 1,
         page: 1,
         count: 1
       });
@@ -35,9 +34,8 @@ describe('GET /qa/questions', () => {
   describe('Given count and/or page', () => {
     test('Should respond back with 1 question when Page and Count set to 1', async () => {
       const response = await request(mockServer)
-      .get('/qa/questions')
+      .get('/qa/questions?product_id=1')
       .send({
-        productId: 1,
         page: 1,
         count: 1
       });
@@ -45,9 +43,8 @@ describe('GET /qa/questions', () => {
     });
     test('Should respond back with 5 questions when count is not provided', async () => {
       const response = await request(mockServer)
-      .get('/qa/questions')
+      .get('/qa/questions?product_id=1')
       .send({
-        productId: 1,
         page: 1
       });
       expect (response.body.results.length).toBe(5);
@@ -56,7 +53,7 @@ describe('GET /qa/questions', () => {
   describe('Given incorrect or no product ID', () => {
     test('Should respond with a 400 status code if a product ID is not supplied', async () => {
       const response = await request(mockServer)
-      .get('/qa/questions')
+      .get('/qa/questions?product_id=')
       .send({
         page: 1,
         count: 1
@@ -65,9 +62,8 @@ describe('GET /qa/questions', () => {
     });
     test('Should respond with a 400 status code if a incorrect product ID is supplied', async () => {
       const response = await request(mockServer)
-      .get('/qa/questions')
+      .get('/qa/questions?product_id=test')
       .send({
-        product_id: 'test',
         page: 1,
         count: 1
       });

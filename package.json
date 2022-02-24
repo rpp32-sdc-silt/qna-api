@@ -23,6 +23,7 @@
   "homepage": "https://github.com/ashtsai14/qna-api#readme",
   "dependencies": {
     "body-parser": "^1.19.2",
+    "cors": "^2.8.5",
     "csv-parse": "^5.0.4",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.0.0",

@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
-const { migrate } = require('postgres-migrations');
 require('dotenv').config();
+const format = require('pg-format');
+const { migrate } = require('postgres-migrations');
 
 const poolConfig = {
   database: process.env.DATABASE,
@@ -57,7 +58,7 @@ db.getQuestions = async function (productId, page, count) {
   }
 
   return questions;
-}
+};
 
 db.getAnswers = async function (questionId, page, count) {
   let offset = 0;
@@ -89,12 +90,83 @@ db.getAnswers = async function (questionId, page, count) {
   };
 
   return answers
-}
+};
 
-db.getPhotos = async function (answerId) {
-  const query = `Select * From photos WHERE answer_id = ${answerId} limit 10;`
+db.getAllQuestions = async function (productId) {
+  const query = `Select * FROM questions WHERE product_id = ${productId}`;
   const photos = await db.query(query);
   return photos.rows;
+};
+
+db.addQuestion = async function (requestBody) {
+  const query = `
+    INSERT INTO questions (product_id, question_body, asker_name, asker_email, reported, question_date, question_helpfulness)
+    VALUES (${requestBody.product_id}, '${requestBody.body}', '${requestBody.name}', '${requestBody.email}', false, CURRENT_TIMESTAMP(0), 0)
+    `;
+  await db.query(query);
+};
+
+db.addAnswer = async function (questionId, requestBody) {
+  const query = `
+    INSERT INTO answers (question_id, body, date, answerer_name, answerer_email, reported, helpfulness)
+    VALUES(${questionId}, '${requestBody.body}', CURRENT_TIMESTAMP(0), '${requestBody.name}', '${requestBody.email}', false, 0)
+    RETURNING id
+    `;
+  await db.query(query);
+};
+
+db.addPhoto = async function (requestBody) {
+  let photos = requestBody.photos
+  // const query = format(`
+  //   INSERT INTO photos (answer_id, url)
+  //   VALUES (
+  //     (SELECT MAX(id) FROM answers), %L
+  //   )
+  // `, requestBody.photos);
+  for (const url of photos) {
+    const query = `
+      INSERT INTO photos (answer_id, url)
+      VALUES (
+        (SELECT MAX(id) FROM answers), '${url}')
+        `;
+      await db.query(query);
+  };
+};
+
+db.updateQuestionHelpfulness = async function (questionId) {
+  const query = `
+    UPDATE questions
+    SET question_helpfulness = question_helpfulness + 1
+    WHERE question_id = ${questionId}
+  `
+  await db.query(query);
+};
+
+db.updateAnswerHelpfulness = async function (answerId) {
+  const query = `
+    UPDATE answers
+    SET helpfulness = helpfulness + 1
+    WHERE id = ${answerId}
+  `
+  await db.query(query);
+};
+
+db.updateQuestionReported = async function (questionId) {
+  const query = `
+    UPDATE questions
+    SET reported = true
+    WHERE question_id = ${questionId}
+  `
+  await db.query(query);
+}
+
+db.updateAnswersReported = async function (answerId) {
+  const query = `
+    UPDATE answers
+    SET reported = true
+    WHERE id = ${answerId}
+  `
+  await db.query(query);
 }
 
 module.exports = { db };

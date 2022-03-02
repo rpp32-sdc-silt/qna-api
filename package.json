@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/ashtsai14/qna-api#readme",
   "dependencies": {
+    "body-parser": "^1.19.2",
     "csv-parse": "^5.0.4",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.0.0",
@@ -31,6 +32,7 @@
     "node-postgres": "^0.6.2",
     "nodemon": "^2.0.15",
     "pg": "^8.7.1",
+    "pg-format": "^1.0.4",
     "postgres-migrations": "^5.3.0",
     "supertest": "^6.2.2"
   },

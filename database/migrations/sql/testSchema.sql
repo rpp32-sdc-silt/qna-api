@@ -26,16 +26,17 @@ COPY questions (question_id, product_id, question_body, epoch, asker_name, asker
 UPDATE questions SET question_date = to_timestamp(floor(epoch/1000));
 ALTER TABLE questions DROP COLUMN epoch;
 SELECT setval(pg_get_serial_sequence('questions', 'question_id'), coalesce(max(question_id)+1, 1), false) FROM questions;
+CREATE INDEX ON questions (product_id);
 
 CREATE TABLE answers(
-  id integer primary key,
+  id serial primary key,
   question_id serial NOT NULL,
   body VARCHAR(255) NOT NULL,
   epoch BIGINT NOT NULL,
   answerer_name VARCHAR(255) NOT NULL,
   answerer_email VARCHAR(255) NOT NULL,
   reported BOOLEAN,
-  helpfulness VARCHAR(255),
+  helpfulness integer NOT NULL,
   date TIMESTAMP NULL DEFAULT NULL,
   CONSTRAINT fk_question
     FOREIGN KEY (question_id) references questions(question_id)
@@ -47,9 +48,11 @@ COPY answers (id, question_id, body, epoch, answerer_name, answerer_email, repor
 UPDATE answers SET date = to_timestamp(floor(epoch/1000));
 ALTER TABLE answers DROP COLUMN epoch;
 SELECT setval(pg_get_serial_sequence('answers', 'id'), coalesce(max(id)+1, 1), false) FROM answers;
+CREATE INDEX ON answers (question_id);
+
 
 CREATE TABLE photos (
-  id integer primary key,
+  id serial primary key,
   answer_id integer NOT NULL,
   url VARCHAR(2083) NOT NULL,
   CONSTRAINT fk_answer
@@ -60,3 +63,4 @@ CREATE TABLE photos (
 
 COPY photos FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testPhotos.csv' Delimiter ',' csv header;
 SELECT setval(pg_get_serial_sequence('photos', 'id'), coalesce(max(id)+1, 1), false) FROM photos;
+CREATE INDEX ON photos (answer_id);

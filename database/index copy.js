@@ -1,9 +1,10 @@
 const { Pool } = require('pg');
-const { migrate } = require('postgres-migrations');
 require('dotenv').config();
+const format = require('pg-format');
+const { migrate } = require('postgres-migrations');
 
 const poolConfig = {
-  database: process.env.TESTDATABASE,
+  database: process.env.DATABASE,
   user: process.env.POSTGRES_USER,
   // password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,

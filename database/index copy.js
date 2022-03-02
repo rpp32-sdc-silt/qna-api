@@ -16,12 +16,6 @@ const poolConfig = {
 
 const db = new Pool(poolConfig)
 
-db.connect(function(err) {
-  if (err) {
-    console.log(err);
-  }
-})
-
 db.getQuestions = async function (productId, page, count) {
   let offset = 0;
   if (page !== '1') {

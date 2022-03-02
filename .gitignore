@@ -2,3 +2,6 @@ node_modules
 pgdata
 coverage
 data
+newrelic_agent.log
+newrelic.js
+Node.js Setup/

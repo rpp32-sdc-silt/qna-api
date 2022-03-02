@@ -1,3 +1,4 @@
+require('newrelic');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -10,8 +11,8 @@ module.exports = function (db) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
 
-  app.listen(3050, () => {
-    console.log('Listening on Port 3050');
+  app.listen(8080, () => {
+    console.log('Listening on Port 8080');
   });
 
   app.get('/', (req, res) => {
@@ -30,7 +31,7 @@ module.exports = function (db) {
   app.get('/qa/questions', async (req, res) => {
     try {
       const questions = await db.getQuestions(req.query.product_id, (req.body.page || 1), (req.body.count || 5));
-      res.status(200).send(questions);
+      res.status(200).json(questions);
     } catch (err) {
       res.status(404).send(err.message);
     }
@@ -98,6 +99,7 @@ module.exports = function (db) {
   });
 
   app.put('/qa/answers/:answer_id/report', async (req, res) => {
+    console.log(req.params.answer_id)
     try {
       await db.updateAnswersReported(req.params.answer_id);
       res.status(204).send('NO CONTENT');

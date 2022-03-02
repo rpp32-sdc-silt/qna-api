@@ -30,6 +30,8 @@
     "express": "^4.17.2",
     "fast-csv": "^4.3.6",
     "fs": "0.0.1-security",
+    "k6": "0.0.0",
+    "newrelic": "^8.8.0",
     "node-postgres": "^0.6.2",
     "nodemon": "^2.0.15",
     "pg": "^8.7.1",

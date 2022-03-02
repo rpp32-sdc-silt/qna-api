@@ -26,6 +26,7 @@ COPY questions (question_id, product_id, question_body, epoch, asker_name, asker
 UPDATE questions SET question_date = to_timestamp(floor(epoch/1000));
 ALTER TABLE questions DROP COLUMN epoch;
 SELECT setval(pg_get_serial_sequence('questions', 'question_id'), coalesce(max(question_id)+1, 1), false) FROM questions;
+CREATE INDEX ON questions (product_id);
 
 CREATE TABLE answers(
   id serial primary key,
@@ -47,6 +48,8 @@ COPY answers (id, question_id, body, epoch, answerer_name, answerer_email, repor
 UPDATE answers SET date = to_timestamp(floor(epoch/1000));
 ALTER TABLE answers DROP COLUMN epoch;
 SELECT setval(pg_get_serial_sequence('answers', 'id'), coalesce(max(id)+1, 1), false) FROM answers;
+CREATE INDEX ON answers (question_id);
+
 
 CREATE TABLE photos (
   id serial primary key,
@@ -60,3 +63,4 @@ CREATE TABLE photos (
 
 COPY photos FROM '/Users/ash/Documents/RPP32/FEC-Project/qna-api/data/testPhotos.csv' Delimiter ',' csv header;
 SELECT setval(pg_get_serial_sequence('photos', 'id'), coalesce(max(id)+1, 1), false) FROM photos;
+CREATE INDEX ON photos (answer_id);

@@ -6,21 +6,15 @@ const { migrate } = require('postgres-migrations');
 const poolConfig = {
   database: process.env.DATABASE,
   user: process.env.POSTGRES_USER,
-  // password: process.env.DB_PASSWORD,
+  password: process.env.POSTGRES_PASSWORD,
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
-  max: Number(process.env.DB_POOL_SIZE),
+  // max: Number(process.env.DB_POOL_SIZE),
   idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
   connectionTimeoutMillis: Number(process.env.DB_POOL_CLIENT_CONNECTION_TIMEOUT),
 }
 
 const db = new Pool(poolConfig)
-
-db.connect(function(err) {
-  if (err) {
-    console.log(err);
-  }
-})
 
 db.getQuestions = async function (productId, page, count) {
   let offset = 0;

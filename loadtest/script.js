@@ -4,7 +4,7 @@ import { Counter } from 'k6/metrics';
 
 export let options = {
   vus: 1000,
-  duration: '3m',
+  duration: '30s',
 };
 
 export default function () {

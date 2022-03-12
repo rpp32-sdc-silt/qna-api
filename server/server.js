@@ -2,11 +2,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const Redis = require('redis');
 
 
-module.exports = function (db) {
+module.exports = function async (db) {
   const app = express();
 
+  let redisClient;
+  (async () => {
+    redisClient = Redis.createClient();
+    redisClient.on('error', (err) => console.log('Redis Client Error', err));
+    await redisClient.connect();
+  })();
+
+  app.use(express.static('public'));
   app.use(cors());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
@@ -19,18 +28,15 @@ module.exports = function (db) {
     res.status(200).send('Welcome!');
   });
 
-  // app.get('/qa/questions', async (req, res) => {
-  //   console.log('req params', req.query)
-  //   try {
-  //     res.send('test')
-  //   } catch (err) {
-  //     res.status(404).send(err.message);
-  //   }
-  // });
-
   app.get('/qa/questions', async (req, res) => {
     try {
-      const questions = await db.getQuestions(req.query.product_id, (req.body.page || 1), (req.body.count || 5));
+      const prodId = req.query.product_id;
+      let questions = await redisClient.get(`${prodId}`);
+      questions = JSON.parse(questions);
+      if (!questions) {
+        questions = await db.getQuestions(req.query.product_id, (req.body.page || 1), (req.body.count || 5));
+        redisClient.set(`P${prodId}`, JSON.stringify(questions));
+      }
       res.status(200).json(questions);
     } catch (err) {
       res.status(404).send(err.message);
@@ -66,7 +72,13 @@ module.exports = function (db) {
 
   app.get('/qa/questions/:question_id/answers', async (req, res) => {
     try {
-      const answers = await db.getAnswers(req.params.question_id, (req.body.page || 1), (req.body.count || 5));
+      const questionId = req.params.question_id;
+      let answers = await redisClient.get(`${questionId}`);
+      answers = JSON.parse(answers);
+      if(!answers) {
+        answers = await db.getAnswers(req.params.question_id, (req.body.page || 1), (req.body.count || 5));
+        redisClient.set(`Q${questionId}`, JSON.stringify(answers));
+      }
       res.status(200).send(answers);
     } catch (err) {
       res.status(404).send(err.message);

@@ -10,8 +10,8 @@ const poolConfig = {
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   // max: Number(process.env.DB_POOL_SIZE),
-  idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
-  connectionTimeoutMillis: Number(process.env.DB_POOL_CLIENT_CONNECTION_TIMEOUT),
+  // idleTimeoutMillis: Number(process.env.DB_POOL_CLIENT_IDLE_TIMEOUT),
+  // connectionTimeoutMillis: Number(process.env.DB_POOL_CLIENT_CONNECTION_TIMEOUT),
 }
 
 const db = new Pool(poolConfig)

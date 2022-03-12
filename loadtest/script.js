@@ -3,7 +3,7 @@ import { sleep, check } from 'k6';
 import { Counter } from 'k6/metrics';
 
 export let options = {
-  vus: 1000,
+  vus: 500,
   duration: '30s',
 };
 
